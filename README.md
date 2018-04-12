@@ -11,3 +11,14 @@ There are several notebooks provided:
   * XGBoost optimisation (hyperparameter tune)
   * evaluation of XGBoost models
   * preparation of submission by predicting on the test dataset
+
+The notebooks are developed in python3.5+. 
+For some sub-tasks, you will need specific python packages. 
+All of those can be installed with conda (either mini- or ana-).
+This was tested to work properly on `lxplus` (CERN work servers).
+Just do something like
+```bash
+conda install numpy pandas matplotlib seaborn scikit-learn xgboost lightgbm
+```
+You might need to add conda-forge to the list of channels: `conda config --add channels conda-forge`,
+if you have not done so yet (the installation would fail complaining that a subset of modules can not be found).
