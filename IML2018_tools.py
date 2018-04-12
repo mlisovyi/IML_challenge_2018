@@ -8,6 +8,7 @@ import seaborn as sns
 import joblib
 #XGBoost itself
 import xgboost as xgb
+import lightgbm as lgb
 
 
 def loadInputAsDF(fin_name, n = None):
@@ -91,6 +92,12 @@ def evaluate_loss_xgb(predictions, truth):
     return ('xxx', loss)  
 
 
+def evaluate_loss_lgb(predictions, truth):  
+    name, loss = evaluate_loss_xgb(predictions, truth)
+    return (name, loss, False)  
+
+
+
 #an adjusted function from this post: https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/
 def modelfit(alg, X_train, y_train, useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
     
@@ -127,14 +134,25 @@ def plotClfPerfEvolution(clf, title='', lossName='xxx'):
     for the lossName see evaluate_loss_xgb() function
     '''
     x = range(clf.get_params()['n_estimators'])
-    evals_result = clf.evals_result()
+    
+    if isinstance(clf, xgb.XGBRegressor):
+        evals_result = clf.evals_result()
+        train_eval_name='validation_0'
+        test_eval_name ='validation_1'
+    elif isinstance(clf, lgb.LGBMRegressor):
+        evals_result = clf.evals_result_
+        train_eval_name='training'
+        test_eval_name ='valid_1'
+    else:
+        print('Unknown regressor type: {}').format(clf.__class__)
+        return
     
     plt.figure(figsize=(10,6))
     plt.plot(x, 
-         evals_result['validation_0'][lossName],
+         evals_result[train_eval_name][lossName],
          'b--', label='Train')
     plt.plot(x, 
-         evals_result['validation_1'][lossName],
+         evals_result[test_eval_name][lossName],
          'r-', label='Test')
     plt.xlabel('N trees')
     plt.ylabel('Desired metrics')
