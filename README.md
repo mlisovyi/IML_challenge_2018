@@ -26,7 +26,7 @@ if you have not done so yet (the installation would fail complaining that a subs
 
 Performance of XGBoost was compared to LightGBM with a compatible setup. 
 LightGBM was found to perform fits 8x faster, 
-while keeping a comparable precision in terms of the custom loss defined by the challenge.
+while keeping a comparable precision (`1.5`) in terms of the custom loss defined by the challenge.
 In particular, XGBoost took `3min 57s` per fit, while lightGBM took only `30.2 s` 
-(both averged over 3 execution with 4 parallel jobs)
+(both averged over 3 execution with 4 parallel jobs).
 Even parameter settings is faster in LightGBM: `13.3 µs ± 363 ns` vs `286 µs ± 17.5 µs`
