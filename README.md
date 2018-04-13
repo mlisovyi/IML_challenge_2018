@@ -33,11 +33,13 @@ In particular, XGBoost took `3min 57s` per fit, while lightGBM took only `30.2 s
 Even parameter settings is faster in LightGBM: `13.3 µs ± 363 ns` vs `286 µs ± 17.5 µs`
 
 Performance comparison was also done on a local machine with INTEL i5 2xcore each double-threaded
-running Ubuntu 16.4 with a local file access on SSD:
+running Ubuntu 16.4 with a local file access on SSD: 
+
 | Number of parallel jobs in training (n_jobs) | 4 | 3 | 2 | 1 |
- ------------------------------
+|-----|:----:|:-----:|:-----:|:-----------:|
 | XGBoost | `5min 11s` | `6min 1s` | `6min 51s` | `11min 52s` | 
 | LightGBM | `34.1 s` | `37.9 s` | `40.8 s` | `60 s` | 
+
 Difference in processing speed is even larger (the test was performed averaging over 5 loops of training).
 
 Note, that **scaling with the number of cores goes almost linearly** in processing speed
