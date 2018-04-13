@@ -9,7 +9,7 @@ Full samples (~1M entries) are available here: [test](https://cernbox.cern.ch/in
 There are several notebooks provided: 
   * feature extraction (used to create the provided pickle files from the original inputs)
   * XGBoost optimisation (hyperparameter tune)
-  * LightGBM test (no thorough optimisation so far). Evaluation metrics on a test sample doesn't work in a LGBM fit for some unclear reason (to be investigated). 
+  * LightGBM test (no thorough optimisation so far). 
   * evaluation of XGBoost models
   * preparation of submission by predicting on the test dataset
 
