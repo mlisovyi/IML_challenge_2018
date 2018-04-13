@@ -73,7 +73,7 @@ def dropColumns(df, printColumns=True):
         print(df.columns)
     
     
-def evaluate_loss(predictions, truth):  
+def evaluate_loss(truth, predictions):  
     #truth is xgb.DMatrix in fact, thust .get_label to get the y column
     if isinstance(truth , xgb.DMatrix):
         t = truth.get_label()
@@ -88,11 +88,14 @@ def evaluate_loss(predictions, truth):
 
 
 def evaluate_loss_xgb(predictions, truth):  
-    loss = evaluate_loss(predictions, truth)
+    #IMPORTANT: inverted input order between 
+    #`eval_metric` attribute of XGBRegressor.fit() and GridSearchCV or `eval_metric` of LGBMModel.fit()
+    #This is relevant for asymmetric metric definition (like the one in IML2018 challenge)
+    loss = evaluate_loss(truth, predictions)
     return ('xxx', loss)  
 
 
-def evaluate_loss_lgb(predictions, truth):  
+def evaluate_loss_lgb(truth, predictions):  
     name, loss = evaluate_loss_xgb(predictions, truth)
     return (name, loss, False)  
 
@@ -141,8 +144,8 @@ def plotClfPerfEvolution(clf, title='', lossName='xxx'):
         test_eval_name ='validation_1'
     elif isinstance(clf, lgb.LGBMRegressor):
         evals_result = clf.evals_result_
-        train_eval_name='training'
-        test_eval_name ='valid_1'
+        train_eval_name='validation_0'
+        test_eval_name ='validation_1'
     else:
         print('Unknown regressor type: {}').format(clf.__class__)
         return
