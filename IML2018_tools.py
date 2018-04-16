@@ -32,6 +32,8 @@ def loadInputAsDF(fin_name, n = None):
         df = pd.DataFrame.from_records(train_rec_array)
     elif '.pickle' in fin_name:
         df = pd.read_pickle(fin_name)
+    elif '.h5' in fin_name:
+        df = pd.read_hdf(fin_name, key='df')
     else: 
         print("I do not know how to treat this input file: {}".format(fin_name))
     
@@ -57,13 +59,10 @@ def dropColumns(df, printColumns=True):
        'constituents_dz', 'constituents_Eem', 'constituents_Ehad']
     columns_insignificant = ['recojet_eta', 'recojet_phi', 
        'recojet_sd_eta', 'recojet_sd_phi']
-    columns_insignificant_const = ['constituents_eta_0',
-       'constituents_eta_1', 'constituents_eta_2', 'constituents_eta_3',
-       'constituents_eta_4', 'constituents_phi_0', 'constituents_phi_1',
-       'constituents_phi_2', 'constituents_phi_3', 'constituents_phi_4',
-       'constituents_charge_0', 'constituents_charge_1',
-       'constituents_charge_2', 'constituents_charge_3',
-       'constituents_charge_4']
+    
+    columns_insignificant_const = []
+    for const_col_name_prefix in ['constituents_eta', 'constituents_phi', 'constituents_charge']:
+        columns_insignificant_const.extend([s for s in df.columns if const_col_name_prefix in s])
     #columns_to_drop.extend(columns_arrays)
     columns_to_drop.extend(columns_insignificant)
     columns_to_drop.extend(columns_insignificant_const)
@@ -131,12 +130,13 @@ def modelfit(alg, X_train, y_train, useTrainCV=True, cv_folds=5, early_stopping_
     plt.ylabel('Feature Importance Score')
     
     
-def plotClfPerfEvolution(clf, title='', lossName='xxx'):
+def plotClfPerfEvolution(clf, title='', lossName='xxx', nEarlyStop=0):
     '''
     Do a standardised plot of loss vs boosting iteration
     for the lossName see evaluate_loss_xgb() function
     '''
-    x = range(clf.get_params()['n_estimators'])
+    #nEarlyStop was introduced to properly draw runs with early stopping
+    x = range(clf.booster_.current_iteration() + nEarlyStop)
     
     if isinstance(clf, xgb.XGBRegressor):
         evals_result = clf.evals_result()
