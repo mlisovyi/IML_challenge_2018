@@ -19,7 +19,7 @@ All of those can be installed with conda (either mini- or ana-).
 This was tested to work properly on `lxplus` (CERN work servers).
 Just do something like
 ```bash
-conda install numpy pandas matplotlib seaborn scikit-learn xgboost lightgbm
+conda install numpy pandas matplotlib seaborn scikit-learn xgboost lightgbm ipykernel jupyther joblib pytables
 ```
 You might need to add conda-forge to the list of channels: `conda config --add channels conda-forge`,
 if you have not done so yet (the installation would fail complaining that a subset of modules can not be found).
@@ -46,3 +46,17 @@ Note, that **scaling with the number of cores goes almost linearly** in processi
 (there is some initialisation delay at the start of ClassifierSklearnApi.fit(),
 which is most likely due to some initialisation, which is potentially not parallel).
 However, **scaling into threads on a single core doesn't show a linear scaling**.
+
+Together with @daniloefl, the choice of the objective function was studied.
+It was found, **that optimisation of MAE gives the best results 
+in terms of the custom loss function defined by the competition**.
+(`0.7` with MAE vs `1.37` with MSE for a custom picked dataset 
+and booster parameters).
+A faster convergence, in terms of the number of boosting iterations,
+was observed for this metric, compared to the alternative custom metric 
+`((pred-true)/(1+true+pred))**2` considered in  development process.
+
+
+_Open unclear issue_: with both XGBoost and LightGBM, 
+performance on PCA-transformed inputs was observed to be more poor,
+than with the raw inputs.
