@@ -6,12 +6,17 @@ A small train sample (10k entries) is available in /afs/cern.ch/user/m/mlisovyi/
 Full samples (~1M entries) are available here: [test](https://cernbox.cern.ch/index.php/s/ODYoAXRfxU6N8U9), 
 [train](https://cernbox.cern.ch/index.php/s/EYKKvatjv3XkoR4/download). These are pickled pd.DataFrame objects. The original inputs have been pre-processed by unrolling the 5 hardest contrituents into separate columns and adding sum over all constituents for charge and Eele and Ehad. The original full contituent lists have been droped to save space. 
 
+### Package overview
+
 There are several notebooks provided: 
   * feature extraction (used to create the provided pickle files from the original inputs)
   * XGBoost optimisation (hyperparameter tune)
-  * LightGBM test (no thorough optimisation so far). 
+  * LightGBM test (hyperparameter tune, metric choice tests). 
   * evaluation of XGBoost models
-  * preparation of submission by predicting on the test dataset
+  * preparation of submission predicting on the test dataset
+There is also a common set of functions available in [IML2018_tools.py](IML2018_tools.py).
+
+### Environment setup
 
 The notebooks are developed in python3.6+, but will most likely work in any python3 environment. 
 For some sub-tasks, you will need specific python packages. 
@@ -23,6 +28,10 @@ conda install numpy pandas matplotlib seaborn scikit-learn xgboost lightgbm ipyk
 ```
 You might need to add conda-forge to the list of channels: `conda config --add channels conda-forge`,
 if you have not done so yet (the installation would fail complaining that a subset of modules can not be found).
+
+There is an example of the conda environment dump, in which the code was tested to work.
+
+### GBM speed benchmarking
 
 Performance of XGBoost was compared to LightGBM with a compatible setup. 
 **LightGBM was found to perform fits 8x faster**, 
@@ -47,6 +56,8 @@ Note, that **scaling with the number of cores goes almost linearly** in processi
 which is most likely due to some initialisation, which is potentially not parallel).
 However, **scaling into threads on a single core doesn't show a linear scaling**.
 
+### Metric choice
+
 Together with @daniloefl, the choice of the objective function was studied.
 It was found, **that optimisation of MAE gives the best results 
 in terms of the custom loss function defined by the competition**.
@@ -56,7 +67,7 @@ A faster convergence, in terms of the number of boosting iterations,
 was observed for this metric, compared to the alternative custom metric 
 `((pred-true)/(1+true+pred))**2` considered in  development process.
 
-
-_Open unclear issue_: with both XGBoost and LightGBM, 
+#### Open/unclear issue
+With both XGBoost and LightGBM, 
 performance on PCA-transformed inputs was observed to be more poor,
 than with the raw inputs.
